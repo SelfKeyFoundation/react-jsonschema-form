@@ -1,9 +1,8 @@
 import React from "react";
-import { expect } from "chai";
 import { Simulate } from "react-dom/test-utils";
 
 import validateFormData, { toErrorList } from "../src/validate";
-import { createFormComponent } from "./test_utils";
+import { createFormComponent } from "./test-utils";
 
 describe("Validation", () => {
   describe("validate.validateFormData()", () => {
@@ -13,8 +12,8 @@ describe("Validation", () => {
         type: "object",
         properties: {
           foo: { type: "string" },
-          [illFormedKey]: { type: "string" },
-        },
+          [illFormedKey]: { type: "string" }
+        }
       };
 
       let errors, errorSchema;
@@ -29,16 +28,18 @@ describe("Validation", () => {
       });
 
       it("should return an error list", () => {
-        expect(errors).to.have.length.of(2);
-        expect(errors[0].message).eql("should be string");
-        expect(errors[1].message).eql("should be string");
+        expect(errors).toHaveLength(2);
+        expect(errors[0].message).toEqual("should be string");
+        expect(errors[1].message).toEqual("should be string");
       });
 
       it("should return an errorSchema", () => {
-        expect(errorSchema.foo.__errors).to.have.length.of(1);
-        expect(errorSchema.foo.__errors[0]).eql("should be string");
-        expect(errorSchema[illFormedKey].__errors).to.have.length.of(1);
-        expect(errorSchema[illFormedKey].__errors[0]).eql("should be string");
+        expect(errorSchema.foo.__errors).toHaveLength(1);
+        expect(errorSchema.foo.__errors[0]).toEqual("should be string");
+        expect(errorSchema[illFormedKey].__errors).toHaveLength(1);
+        expect(errorSchema[illFormedKey].__errors[0]).toEqual(
+          "should be string"
+        );
       });
     });
 
@@ -50,9 +51,9 @@ describe("Validation", () => {
             title: "Price per task ($)",
             type: "number",
             multipleOf: 0.01,
-            minimum: 0,
-          },
-        },
+            minimum: 0
+          }
+        }
       };
 
       let errors;
@@ -63,7 +64,7 @@ describe("Validation", () => {
       });
 
       it("should not return an error", () => {
-        expect(errors).to.have.length.of(0);
+        expect(errors).toHaveLength(0);
       });
     });
 
@@ -75,8 +76,8 @@ describe("Validation", () => {
         required: ["pass1", "pass2"],
         properties: {
           pass1: { type: "string" },
-          pass2: { type: "string" },
-        },
+          pass2: { type: "string" }
+        }
       };
 
       beforeEach(() => {
@@ -93,13 +94,13 @@ describe("Validation", () => {
       });
 
       it("should return an error list", () => {
-        expect(errors).to.have.length.of(1);
-        expect(errors[0].stack).eql("pass2: passwords don't match.");
+        expect(errors).toHaveLength(1);
+        expect(errors[0].stack).toEqual("pass2: passwords don't match.");
       });
 
       it("should return an errorSchema", () => {
-        expect(errorSchema.pass2.__errors).to.have.length.of(1);
-        expect(errorSchema.pass2.__errors[0]).eql("passwords don't match.");
+        expect(errorSchema.pass2.__errors).toHaveLength(1);
+        expect(errorSchema.pass2.__errors[0]).toEqual("passwords don't match.");
       });
     });
 
@@ -110,19 +111,19 @@ describe("Validation", () => {
             __errors: ["err1", "err2"],
             a: {
               b: {
-                __errors: ["err3", "err4"],
-              },
+                __errors: ["err3", "err4"]
+              }
             },
             c: {
-              __errors: ["err5"],
-            },
+              __errors: ["err5"]
+            }
           })
-        ).eql([
+        ).toEqual([
           { stack: "root: err1" },
           { stack: "root: err2" },
           { stack: "b: err3" },
           { stack: "b: err4" },
-          { stack: "c: err5" },
+          { stack: "c: err5" }
         ]);
       });
     });
@@ -133,8 +134,8 @@ describe("Validation", () => {
         type: "object",
         properties: {
           foo: { type: "string" },
-          [illFormedKey]: { type: "string" },
-        },
+          [illFormedKey]: { type: "string" }
+        }
       };
       const newErrorMessage = "Better error message";
       const transformErrors = errors => {
@@ -154,8 +155,8 @@ describe("Validation", () => {
       });
 
       it("should use transformErrors function", () => {
-        expect(errors).not.to.be.empty;
-        expect(errors[0].message).to.equal(newErrorMessage);
+        expect(Object.keys(errors)).toHaveLength(1);
+        expect(errors[0].message).toBe(newErrorMessage);
       });
     });
 
@@ -165,9 +166,9 @@ describe("Validation", () => {
         properties: {
           foo: {
             type: "string",
-            required: "invalid_type_non_array",
-          },
-        },
+            required: "invalid_type_non_array"
+          }
+        }
       };
 
       let errors, errorSchema;
@@ -179,17 +180,15 @@ describe("Validation", () => {
       });
 
       it("should return an error list", () => {
-        expect(errors).to.have.length.of(1);
-        expect(errors[0].name).eql("type");
-        expect(errors[0].property).eql(".properties['foo'].required");
-        expect(errors[0].message).eql("should be array");
+        expect(errors).toHaveLength(1);
+        expect(errors[0].name).toEqual("type");
+        expect(errors[0].property).toEqual(".properties['foo'].required");
+        expect(errors[0].message).toEqual("should be array");
       });
 
       it("should return an errorSchema", () => {
-        expect(errorSchema.properties.foo.required.__errors).to.have.length.of(
-          1
-        );
-        expect(errorSchema.properties.foo.required.__errors[0]).eql(
+        expect(errorSchema.properties.foo.required.__errors).toHaveLength(1);
+        expect(errorSchema.properties.foo.required.__errors[0]).toEqual(
           "should be array"
         );
       });
@@ -204,20 +203,20 @@ describe("Validation", () => {
           required: ["foo"],
           properties: {
             foo: { type: "string" },
-            bar: { type: "string" },
-          },
+            bar: { type: "string" }
+          }
         };
 
-        var comp, node, onError;
+        let comp, node;
+        const onError = jest.fn();
 
         beforeEach(() => {
-          onError = jest.fn()();
           const compInfo = createFormComponent({
             schema,
             formData: {
-              foo: undefined,
+              foo: undefined
             },
-            onError,
+            onError
           });
           comp = compInfo.comp;
           node = compInfo.node;
@@ -226,24 +225,25 @@ describe("Validation", () => {
         });
 
         it("should validate a required field", () => {
-          expect(comp.state.errors).to.have.length.of(1);
-          expect(comp.state.errors[0].message).eql("is a required property");
+          expect(comp.state.errors).toHaveLength(1);
+          expect(comp.state.errors[0].message).toEqual(
+            "is a required property"
+          );
         });
 
         it("should render errors", () => {
-          expect(node.querySelectorAll(".errors li")).to.have.length.of(1);
-          expect(node.querySelector(".errors li").textContent).eql(
+          expect(node.querySelectorAll(".errors li")).toHaveLength(1);
+          expect(node.querySelector(".errors li").textContent).toEqual(
             ".foo is a required property"
           );
         });
 
         it("should trigger the onError handler", () => {
-          sinon.assert.calledWith(
-            onError,
-            sinon.match(errors => {
-              return errors[0].message === "is a required property";
+          expect(onError).toHaveBeenCalledWith([
+            expect.objectContaining({
+              message: "is a required property"
             })
-          );
+          ]);
         });
       });
 
@@ -254,21 +254,21 @@ describe("Validation", () => {
           properties: {
             foo: {
               type: "string",
-              minLength: 10,
-            },
-          },
+              minLength: 10
+            }
+          }
         };
 
-        var comp, node, onError;
+        let comp, node;
+        const onError = jest.fn();
 
         beforeEach(() => {
-          onError = jest.fn()();
           const compInfo = createFormComponent({
             schema,
             formData: {
-              foo: "123456789",
+              foo: "123456789"
             },
-            onError,
+            onError
           });
           comp = compInfo.comp;
           node = compInfo.node;
@@ -277,28 +277,25 @@ describe("Validation", () => {
         });
 
         it("should validate a minLength field", () => {
-          expect(comp.state.errors).to.have.length.of(1);
-          expect(comp.state.errors[0].message).eql(
+          expect(comp.state.errors).toHaveLength(1);
+          expect(comp.state.errors[0].message).toEqual(
             "should NOT be shorter than 10 characters"
           );
         });
 
         it("should render errors", () => {
-          expect(node.querySelectorAll(".errors li")).to.have.length.of(1);
-          expect(node.querySelector(".errors li").textContent).eql(
+          expect(node.querySelectorAll(".errors li")).toHaveLength(1);
+          expect(node.querySelector(".errors li").textContent).toEqual(
             ".foo should NOT be shorter than 10 characters"
           );
         });
 
         it("should trigger the onError handler", () => {
-          sinon.assert.calledWith(
-            onError,
-            sinon.match(errors => {
-              return (
-                errors[0].message === "should NOT be shorter than 10 characters"
-              );
+          expect(onError).toHaveBeenCalledWith([
+            expect.objectContaining({
+              message: "should NOT be shorter than 10 characters"
             })
-          );
+          ]);
         });
       });
     });
@@ -318,19 +315,19 @@ describe("Validation", () => {
         const { comp } = createFormComponent({
           schema,
           validate,
-          liveValidate: true,
+          liveValidate: true
         });
         comp.componentWillReceiveProps({ formData });
 
-        expect(comp.state.errorSchema).eql({
-          __errors: ["Invalid"],
+        expect(comp.state.errorSchema).toEqual({
+          __errors: ["Invalid"]
         });
       });
 
       it("should submit form on valid data", () => {
         const schema = { type: "string" };
         const formData = "hello";
-        const onSubmit = jest.fn()();
+        const onSubmit = jest.fn();
 
         function validate(formData, errors) {
           if (formData !== "hello") {
@@ -343,19 +340,19 @@ describe("Validation", () => {
           schema,
           formData,
           validate,
-          onSubmit,
+          onSubmit
         });
 
         Simulate.submit(node);
 
-        sinon.assert.called(onSubmit);
+        expect(onSubmit).toHaveBeenCalledTimes(1);
       });
 
       it("should prevent form submission on invalid data", () => {
         const schema = { type: "string" };
         const formData = "a";
-        const onSubmit = jest.fn()();
-        const onError = jest.fn()();
+        const onSubmit = jest.fn();
+        const onError = jest.fn();
 
         function validate(formData, errors) {
           if (formData !== "hello") {
@@ -369,13 +366,13 @@ describe("Validation", () => {
           formData,
           validate,
           onSubmit,
-          onError,
+          onError
         });
 
         Simulate.submit(node);
 
-        sinon.assert.notCalled(onSubmit);
-        sinon.assert.called(onError);
+        expect(onSubmit).not.toHaveBeenCalled();
+        expect(onError).toHaveBeenCalledTimes(1);
       });
 
       it("should validate a simple object", () => {
@@ -383,8 +380,8 @@ describe("Validation", () => {
           type: "object",
           properties: {
             pass1: { type: "string", minLength: 3 },
-            pass2: { type: "string", minLength: 3 },
-          },
+            pass2: { type: "string", minLength: 3 }
+          }
         };
 
         const formData = { pass1: "aaa", pass2: "b" };
@@ -400,21 +397,21 @@ describe("Validation", () => {
         const { comp } = createFormComponent({
           schema,
           validate,
-          liveValidate: true,
+          liveValidate: true
         });
         comp.componentWillReceiveProps({ formData });
 
-        expect(comp.state.errorSchema).eql({
+        expect(comp.state.errorSchema).toEqual({
           __errors: [],
           pass1: {
-            __errors: [],
+            __errors: []
           },
           pass2: {
             __errors: [
               "should NOT be shorter than 3 characters",
-              "Passwords don't match",
-            ],
-          },
+              "Passwords don't match"
+            ]
+          }
         });
       });
 
@@ -425,14 +422,14 @@ describe("Validation", () => {
             type: "object",
             properties: {
               pass1: { type: "string" },
-              pass2: { type: "string" },
-            },
-          },
+              pass2: { type: "string" }
+            }
+          }
         };
 
         const formData = [
           { pass1: "a", pass2: "b" },
-          { pass1: "a", pass2: "a" },
+          { pass1: "a", pass2: "a" }
         ];
 
         function validate(formData, errors) {
@@ -447,30 +444,30 @@ describe("Validation", () => {
         const { comp } = createFormComponent({
           schema,
           validate,
-          liveValidate: true,
+          liveValidate: true
         });
         comp.componentWillReceiveProps({ formData });
 
-        expect(comp.state.errorSchema).eql({
+        expect(comp.state.errorSchema).toEqual({
           0: {
             pass1: {
-              __errors: [],
+              __errors: []
             },
             pass2: {
-              __errors: ["Passwords don't match"],
+              __errors: ["Passwords don't match"]
             },
-            __errors: [],
+            __errors: []
           },
           1: {
             pass1: {
-              __errors: [],
+              __errors: []
             },
             pass2: {
-              __errors: [],
+              __errors: []
             },
-            __errors: [],
+            __errors: []
           },
-          __errors: [],
+          __errors: []
         });
       });
 
@@ -478,8 +475,8 @@ describe("Validation", () => {
         const schema = {
           type: "array",
           items: {
-            type: "string",
-          },
+            type: "string"
+          }
         };
 
         const formData = ["aaa", "bbb", "ccc"];
@@ -494,15 +491,15 @@ describe("Validation", () => {
         const { comp } = createFormComponent({
           schema,
           validate,
-          liveValidate: true,
+          liveValidate: true
         });
         comp.componentWillReceiveProps({ formData });
 
-        expect(comp.state.errorSchema).eql({
+        expect(comp.state.errorSchema).toEqual({
           0: { __errors: [] },
           1: { __errors: [] },
           2: { __errors: [] },
-          __errors: ["Forbidden value: bbb"],
+          __errors: ["Forbidden value: bbb"]
         });
       });
     });
@@ -514,21 +511,21 @@ describe("Validation", () => {
           required: ["foo"],
           properties: {
             foo: { type: "string" },
-            bar: { type: "string" },
-          },
+            bar: { type: "string" }
+          }
         };
 
-        var comp, node, onError;
+        let comp, node;
+        const onError = jest.fn();
 
         beforeEach(() => {
-          onError = jest.fn()();
           const compInfo = createFormComponent({
             schema,
             formData: {
-              foo: undefined,
+              foo: undefined
             },
             onError,
-            showErrorList: false,
+            showErrorList: false
           });
           comp = compInfo.comp;
           node = compInfo.node;
@@ -537,21 +534,22 @@ describe("Validation", () => {
         });
 
         it("should validate a required field", () => {
-          expect(comp.state.errors).to.have.length.of(1);
-          expect(comp.state.errors[0].message).eql("is a required property");
+          expect(comp.state.errors).toHaveLength(1);
+          expect(comp.state.errors[0].message).toEqual(
+            "is a required property"
+          );
         });
 
         it("should not render error list if showErrorList prop true", () => {
-          expect(node.querySelectorAll(".errors li")).to.have.length.of(0);
+          expect(node.querySelectorAll(".errors li")).toHaveLength(0);
         });
 
         it("should trigger the onError handler", () => {
-          sinon.assert.calledWith(
-            onError,
-            sinon.match(errors => {
-              return errors[0].message === "is a required property";
+          expect(onError).toHaveBeenCalledWith([
+            expect.objectContaining({
+              message: "is a required property"
             })
-          );
+          ]);
         });
       });
     });
@@ -559,11 +557,11 @@ describe("Validation", () => {
     describe("Custom ErrorList", () => {
       const schema = {
         type: "string",
-        minLength: 1,
+        minLength: 1
       };
 
       const uiSchema = {
-        foo: "bar",
+        foo: "bar"
       };
 
       const formData = 0;
@@ -573,7 +571,7 @@ describe("Validation", () => {
         errorSchema,
         schema,
         uiSchema,
-        formContext: { className },
+        formContext: { className }
       }) => (
         <div>
           <div className="CustomErrorList">{errors.length} custom</div>
@@ -591,21 +589,21 @@ describe("Validation", () => {
           liveValidate: true,
           formData,
           templates: { ErrorListTemplate: CustomErrorList },
-          formContext: { className: "foo" },
+          formContext: { className: "foo" }
         });
-        expect(node.querySelectorAll(".CustomErrorList")).to.have.length.of(1);
-        expect(node.querySelector(".CustomErrorList").textContent).eql(
+        expect(node.querySelectorAll(".CustomErrorList")).toHaveLength(1);
+        expect(node.querySelector(".CustomErrorList").textContent).toEqual(
           "1 custom"
         );
-        expect(node.querySelectorAll(".ErrorSchema")).to.have.length.of(1);
-        expect(node.querySelector(".ErrorSchema").textContent).eql(
+        expect(node.querySelectorAll(".ErrorSchema")).toHaveLength(1);
+        expect(node.querySelector(".ErrorSchema").textContent).toEqual(
           "should be string"
         );
-        expect(node.querySelectorAll(".Schema")).to.have.length.of(1);
-        expect(node.querySelector(".Schema").textContent).eql("string");
-        expect(node.querySelectorAll(".UiSchema")).to.have.length.of(1);
-        expect(node.querySelector(".UiSchema").textContent).eql("bar");
-        expect(node.querySelectorAll(".foo")).to.have.length.of(1);
+        expect(node.querySelectorAll(".Schema")).toHaveLength(1);
+        expect(node.querySelector(".Schema").textContent).toEqual("string");
+        expect(node.querySelectorAll(".UiSchema")).toHaveLength(1);
+        expect(node.querySelector(".UiSchema").textContent).toEqual("bar");
+        expect(node.querySelectorAll(".foo")).toHaveLength(1);
       });
     });
   });
