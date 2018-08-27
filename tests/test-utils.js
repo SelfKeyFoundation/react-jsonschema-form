@@ -19,7 +19,10 @@ export function createComponent(Component, props) {
 }
 
 export function createFormComponent(props) {
-  const tools = createComponent(FormWithTheme, props);
+  const tools = createComponent(FormWithTheme, {
+    ...props,
+    safeRenderCompletion: true
+  });
   const compForm = findRenderedComponentWithType(tools.comp, Form);
   const nodeForm = findRenderedDOMComponentWithTag(tools.comp, "form");
 
