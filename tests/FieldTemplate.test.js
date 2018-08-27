@@ -1,19 +1,8 @@
 import React from "react";
 
-import { expect } from "chai";
-import { createFormComponent, createSandbox } from "./test_utils";
+import { createFormComponent } from "./test-utils";
 
 describe("FieldTemplate", () => {
-  let sandbox;
-
-  beforeEach(() => {
-    sandbox = createSandbox();
-  });
-
-  afterEach(() => {
-    sandbox.restore();
-  });
-
   describe("Custom FieldTemplate for disabled property", () => {
     function FieldTemplate(props) {
       return <div className={props.disabled ? "disabled" : "foo"} />;
@@ -25,7 +14,7 @@ describe("FieldTemplate", () => {
         uiSchema: { "ui:disabled": true },
         templates: { FieldTemplate },
       });
-      expect(node.querySelectorAll(".disabled")).to.have.length.of(1);
+      expect(node.querySelectorAll(".disabled")).toHaveLength(1);
     });
 
     it("should render with disabled when ui:disabled is falsey", () => {
@@ -34,7 +23,7 @@ describe("FieldTemplate", () => {
         uiSchema: { "ui:disabled": false },
         templates: { FieldTemplate },
       });
-      expect(node.querySelectorAll(".disabled")).to.have.length.of(0);
+      expect(node.querySelectorAll(".disabled")).toHaveLength(0);
     });
   });
 });
