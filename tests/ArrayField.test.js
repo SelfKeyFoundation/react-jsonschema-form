@@ -311,31 +311,26 @@ describe("ArrayField", () => {
     });
 
     it("should force revalidation when a field is removed", () => {
-      suppressLogs("error", () => {
-        // refs #195
-        const { node } = createFormComponent({
-          schema: {
-            ...schema,
-            items: { ...schema.items, minLength: 4 }
-          },
-          formData: ["foo", "bar!"],
-          safeRenderCompletion: true
-        });
-
-        Simulate.submit(node);
-
-        expect(node.querySelectorAll(".has-error .error-detail")).toHaveLength(
-          1
-        );
-
-        const dropBtns = node.querySelectorAll(".array-item-remove");
-
-        Simulate.click(dropBtns[0]);
-
-        expect(node.querySelectorAll(".has-error .error-detail")).toHaveLength(
-          0
-        );
+      // refs #195
+      const { node } = createFormComponent({
+        schema: {
+          ...schema,
+          items: { ...schema.items, minLength: 4 }
+        },
+        formData: ["foo", "bar!"]
       });
+
+      suppressLogs("error", () => {
+        Simulate.submit(node);
+      });
+
+      expect(node.querySelectorAll(".has-error .error-detail")).toHaveLength(1);
+
+      const dropBtns = node.querySelectorAll(".array-item-remove");
+
+      Simulate.click(dropBtns[0]);
+
+      expect(node.querySelectorAll(".has-error .error-detail")).toHaveLength(0);
     });
 
     it("should handle cleared field values in the array", () => {
