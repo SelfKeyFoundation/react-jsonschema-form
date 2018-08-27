@@ -1,20 +1,9 @@
 import React from "react";
-import { expect } from "chai";
 
 import DescriptionTemplate from "../src/components/templates/DescriptionTemplate";
-import { createSandbox, createComponent } from "./test_utils";
+import { createComponent } from "./test-utils";
 
 describe("DescriptionTemplate", () => {
-  let sandbox;
-
-  beforeEach(() => {
-    sandbox = createSandbox();
-  });
-
-  afterEach(() => {
-    sandbox.restore();
-  });
-
   // For some reason, stateless components needs to be wrapped into a stateful
   // one to be rendered into the document.
   class DescriptionTemplateWrapper extends React.Component {
@@ -32,7 +21,7 @@ describe("DescriptionTemplate", () => {
     };
     const { node } = createComponent(DescriptionTemplateWrapper, props);
 
-    expect(node.tagName).to.equal("DIV");
+    expect(node.tagName).toBe("DIV");
   });
 
   it("should return a p for a description text", () => {
@@ -41,7 +30,7 @@ describe("DescriptionTemplate", () => {
     };
     const { node } = createComponent(DescriptionTemplateWrapper, props);
 
-    expect(node.tagName).to.equal("P");
+    expect(node.tagName).toBe("P");
   });
 
   it("should have the expected id", () => {
@@ -51,6 +40,6 @@ describe("DescriptionTemplate", () => {
     };
     const { node } = createComponent(DescriptionTemplateWrapper, props);
 
-    expect(node.id).to.equal("sample_id");
+    expect(node.id).toBe("sample_id");
   });
 });
