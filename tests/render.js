@@ -23,6 +23,9 @@ export function render(ui, { container, baseElement = container } = {}) {
   // they're passing us a custom container or not.
   mountedContainers.add(container);
 
+  // This is the only one change from the react-testing-library
+  // because we heavily use direct access into the instance.
+  // (But we should avoid that.)
   const comp = ReactDOM.render(ui, container);
   const node = ReactDOM.findDOMNode(comp);
 
