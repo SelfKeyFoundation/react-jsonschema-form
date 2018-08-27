@@ -6,7 +6,7 @@ import {
   renderIntoDocument,
   findRenderedComponentWithType,
   findRenderedDOMComponentWithTag,
-} from "react-addons-test-utils";
+} from "react-dom/test-utils";
 import { findDOMNode, render } from "react-dom";
 
 import FormWithTheme, { Form } from "../src";
