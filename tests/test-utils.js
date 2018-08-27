@@ -7,25 +7,23 @@ import {
 } from "react-dom/test-utils";
 import { findDOMNode } from "react-dom";
 
-import { render } from './render';
+import { render } from "./render";
 import FormWithTheme, { Form } from "../src";
 
 export function createComponent(Component, props) {
-  return render(<Component {...props} />);
+  const tools = render(<Component {...props} />);
+  return {
+    ...tools,
+    rerender: props => tools.rerender(<Component {...props} />)
+  };
 }
 
 export function createFormComponent(props) {
-  const wrapper = render(
-    <FormWithTheme {...props} safeRenderCompletion={true} />
-  );
-  const compForm = findRenderedComponentWithType(wrapper.comp, Form);
-  const nodeForm = findRenderedDOMComponentWithTag(wrapper.comp, "form");
+  const tools = createComponent(FormWithTheme, props);
+  const compForm = findRenderedComponentWithType(tools.comp, Form);
+  const nodeForm = findRenderedDOMComponentWithTag(tools.comp, "form");
 
-  return {
-    comp: compForm,
-    node: nodeForm,
-    wrapper
-  };
+  return { ...tools, comp: compForm, node: nodeForm };
 }
 
 export function setProps(comp, newProps) {
