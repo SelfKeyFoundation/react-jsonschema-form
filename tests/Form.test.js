@@ -364,7 +364,9 @@ describe("Form", () => {
         }
       };
 
-      expect(() => createFormComponent({ schema })).toThrowError(Error);
+      suppressLogs("error", () => {
+        expect(() => createFormComponent({ schema })).toThrowError(Error);
+      });
     });
 
     it("should propagate referenced definition defaults", () => {
@@ -846,7 +848,7 @@ describe("Form", () => {
           });
 
           const submit = node => {
-            suppressLogs(() => {
+            suppressLogs("error", () => {
               Simulate.submit(node);
             });
           };
@@ -1406,7 +1408,7 @@ describe("Form", () => {
       });
 
       it("should not show any errors when branch is empty", () => {
-        suppressLogs('warn', () => {
+        suppressLogs("warn", () => {
           const { comp, node } = createFormComponent({
             schema,
             liveValidate: true,
