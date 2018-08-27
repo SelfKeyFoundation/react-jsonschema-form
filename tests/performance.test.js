@@ -1,37 +1,21 @@
-import sinon from "sinon";
 import React from "react";
 import { scryRenderedComponentsWithType } from "react-dom/test-utils";
 import { fields, widgets, templates } from "../src";
 import SchemaField from "../src/components/fields/SchemaField";
-import {
-  createComponent,
-  createFormComponent,
-  createSandbox,
-  setProps,
-} from "./test-utils";
+import { createComponent, createFormComponent } from "./test-utils";
 
 describe("Rendering performance optimizations", () => {
-  var sandbox;
-
-  beforeEach(() => {
-    sandbox = createSandbox();
-  });
-
-  afterEach(() => {
-    sandbox.restore();
-  });
-
   describe("Form", () => {
     it("should not render if next props are equivalent", () => {
       const schema = { type: "string" };
       const uiSchema = {};
 
       const { comp } = createFormComponent({ schema, uiSchema });
-      sandbox.stub(comp, "render").returns(<div />);
+      jest.spyOn(comp, "render").mockImplementation(() => <div />);
 
       comp.componentWillReceiveProps({ schema });
 
-      sinon.assert.notCalled(comp.render);
+      expect(comp.render).not.toHaveBeenCalled();
     });
 
     it("should not render if next formData are equivalent", () => {
@@ -39,11 +23,11 @@ describe("Rendering performance optimizations", () => {
       const formData = "foo";
 
       const { comp } = createFormComponent({ schema, formData });
-      sandbox.stub(comp, "render").returns(<div />);
+      jest.spyOn(comp, "render").mockImplementation(() => <div />);
 
       comp.componentWillReceiveProps({ formData });
 
-      sinon.assert.notCalled(comp.render);
+      expect(comp.render).not.toHaveBeenCalled();
     });
 
     it("should only render changed object properties", () => {
@@ -51,52 +35,52 @@ describe("Rendering performance optimizations", () => {
         type: "object",
         properties: {
           const: { type: "string" },
-          var: { type: "string" },
-        },
+          var: { type: "string" }
+        }
       };
 
-      const { comp, withTheme } = createFormComponent({
+      const { comp, rerender } = createFormComponent({
         schema,
-        formData: { const: "0", var: "0" },
+        formData: { const: "0", var: "0" }
       });
 
       const fields = scryRenderedComponentsWithType(comp, SchemaField).reduce(
         (fields, fieldComp) => {
-          sandbox.stub(fieldComp, "render").returns(<div />);
+          jest.spyOn(fieldComp, "render").mockImplementation(() => <div />);
           fields[fieldComp.props.idSchema.$id] = fieldComp;
           return fields;
         }
       );
 
-      setProps(withTheme.comp, { schema, formData: { const: "0", var: "1" } });
+      rerender({ schema, formData: { const: "0", var: "1" } });
 
-      sinon.assert.notCalled(fields.root_const.render);
-      sinon.assert.calledOnce(fields.root_var.render);
+      expect(fields.root_const.render).not.toHaveBeenCalled();
+      expect(fields.root_var.render).toHaveBeenCalledTimes(1);
     });
 
     it("should only render changed array items", () => {
       const schema = {
         type: "array",
-        items: { type: "string" },
+        items: { type: "string" }
       };
 
-      const { comp, withTheme } = createFormComponent({
+      const { comp, rerender } = createFormComponent({
         schema,
-        formData: ["const", "var0"],
+        formData: ["const", "var0"]
       });
 
       const fields = scryRenderedComponentsWithType(comp, SchemaField).reduce(
         (fields, fieldComp) => {
-          sandbox.stub(fieldComp, "render").returns(<div />);
+          jest.spyOn(fieldComp, "render").mockImplementation(() => <div />);
           fields[fieldComp.props.idSchema.$id] = fieldComp;
           return fields;
         }
       );
 
-      setProps(withTheme.comp, { schema, formData: ["const", "var1"] });
+      rerender({ schema, formData: ["const", "var1"] });
 
-      sinon.assert.notCalled(fields.root_0.render);
-      sinon.assert.calledOnce(fields.root_1.render);
+      expect(fields.root_0.render).not.toHaveBeenCalled();
+      expect(fields.root_1.render).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -109,14 +93,14 @@ describe("Rendering performance optimizations", () => {
       widgets,
       templates,
       definitions: {},
-      formContext: {},
+      formContext: {}
     };
     const uiSchema = {};
     const schema = {
       type: "object",
       properties: {
-        foo: { type: "string" },
-      },
+        foo: { type: "string" }
+      }
     };
     const idSchema = { $id: "root", foo: { $id: "root_plop" } };
 
@@ -128,15 +112,15 @@ describe("Rendering performance optimizations", () => {
         onChange,
         idSchema,
         onBlur,
-        onFocus,
+        onFocus
       };
 
-      const { comp } = createComponent(SchemaField, props);
-      sandbox.stub(comp, "render").returns(<div />);
+      const { comp, rerender } = createComponent(SchemaField, props);
+      jest.spyOn(comp, "render").mockImplementation(() => <div />);
 
-      setProps(comp, props);
+      rerender(props);
 
-      sinon.assert.notCalled(comp.render);
+      expect(comp.render).not.toHaveBeenCalled();
     });
 
     it("should not render if next formData are equivalent", () => {
@@ -146,15 +130,15 @@ describe("Rendering performance optimizations", () => {
         formData: { foo: "blah" },
         onChange,
         idSchema,
-        onBlur,
+        onBlur
       };
 
-      const { comp } = createComponent(SchemaField, props);
-      sandbox.stub(comp, "render").returns(<div />);
+      const { comp, rerender } = createComponent(SchemaField, props);
+      jest.spyOn(comp, "render").mockImplementation(() => <div />);
 
-      setProps(comp, { ...props, formData: { foo: "blah" } });
+      rerender({ ...props, formData: { foo: "blah" } });
 
-      sinon.assert.notCalled(comp.render);
+      expect(comp.render).not.toHaveBeenCalled();
     });
   });
 });
