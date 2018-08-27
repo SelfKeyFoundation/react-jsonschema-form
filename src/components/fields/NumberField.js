@@ -9,6 +9,8 @@ function NumberField(props) {
     <StringField
       {...props}
       onChange={value => props.onChange(asNumber(value))}
+      onFocus={(id, value) => props.onFocus(id, asNumber(value))}
+      onBlur={(id, value) => props.onBlur(id, asNumber(value))}
     />
   );
 }
