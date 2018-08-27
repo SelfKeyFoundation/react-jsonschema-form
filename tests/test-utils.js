@@ -33,17 +33,7 @@ export function setProps(comp, newProps) {
   render(React.createElement(comp.constructor, newProps), node.parentNode);
 }
 
-export function suppressLogs(...args) {
-  let type = 'error';
-  let fn;
-
-  if (typeof args[0] === "string") {
-    type = args[0];
-    fn = args[1];
-  } else {
-    fn = args[0];
-  }
-
+export function suppressLogs(type, fn) {
   jest.spyOn(console, type);
   global.console[type].mockImplementation(() => {});
   fn();
