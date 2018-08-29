@@ -28,6 +28,7 @@
     ]
   },
   "main": "lib/index.js",
+  "source": "src/index.js",
   "files": [
     "dist",
     "lib"
