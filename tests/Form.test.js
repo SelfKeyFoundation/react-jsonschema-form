@@ -664,6 +664,33 @@ describe("Form", () => {
         })
       );
     });
+
+    it("should call provided change handler and keep the form state", () => {
+      const schema = { title: "Foo", type: "string" };
+      class App extends React.Component {
+        state = { calls: 0 };
+
+        handleChange = ({ formData }) => {
+          this.setState(prevState => ({ calls: prevState.calls + 1 }));
+        };
+
+        render() {
+          return (
+            <Form
+              schema={schema}
+              onChange={this.handleChange}
+              safeRenderCompletion={true}
+            />
+          );
+        }
+      }
+
+      const { getByLabelText } = render(<App />);
+      const input = getByLabelText("Foo");
+
+      fireEvent.change(input, { target: { value: "bar" } });
+      expect(input.value).toBe("bar");
+    });
   });
 
   describe("Blur handler", () => {
