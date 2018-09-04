@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 import {
   getDefaultFormState,
+  createSelector,
   retrieveSchema,
   shouldRender,
   toIdSchema,
@@ -21,47 +22,75 @@ export default class Form extends Component {
 
   constructor(props) {
     super(props);
-    this.state = this.getStateFromProps(props);
+    this.state = this.getDerivedState(props, {
+      errors: [],
+      errorSchema: {},
+    });
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState(this.getStateFromProps(nextProps));
+    const newState = this.getDerivedState(
+      { ...this.props, ...nextProps },
+      this.state
+    );
+    if (newState) {
+      this.setState(newState);
+    }
   }
 
-  getStateFromProps(props) {
-    const state = this.state || {};
-    const schema = "schema" in props ? props.schema : this.props.schema;
-    const uiSchema = "uiSchema" in props ? props.uiSchema : this.props.uiSchema;
-    const edit = typeof props.formData !== "undefined";
-    const liveValidate = props.liveValidate || this.props.liveValidate;
-    const mustValidate = edit && !props.noValidate && liveValidate;
-    const { definitions } = schema;
-    const formData = getDefaultFormState(schema, props.formData, definitions);
-    const retrievedSchema = retrieveSchema(schema, definitions, formData);
-
-    const { errors, errorSchema } = mustValidate
-      ? this.validate(formData, schema)
-      : {
-          errors: state.errors || [],
-          errorSchema: state.errorSchema || {},
-        };
-    const idSchema = toIdSchema(
-      retrievedSchema,
-      uiSchema["ui:rootFieldId"],
-      definitions,
-      formData,
-      props.idPrefix
-    );
-    return {
+  getDerivedState = createSelector(
+    (props, state) => state.errors,
+    (props, state) => state.errorSchema,
+    props => props.schema,
+    props => props.uiSchema,
+    props => props.formData,
+    props => props.liveValidate,
+    props => props.noValidate,
+    props => props.idPrefix,
+    (
+      _errors,
+      _errorSchema,
       schema,
       uiSchema,
-      idSchema,
-      formData,
-      edit,
-      errors,
-      errorSchema,
-    };
-  }
+      initialFormData,
+      liveValidate,
+      noValidate,
+      idPrefix
+    ) => {
+      const edit = typeof initialFormData !== "undefined";
+      const mustValidate = edit && !noValidate && liveValidate;
+      const { definitions } = schema;
+      const formData = getDefaultFormState(
+        schema,
+        initialFormData,
+        definitions
+      );
+      const retrievedSchema = retrieveSchema(schema, definitions, formData);
+
+      const { errors, errorSchema } = mustValidate
+        ? this.validate(formData, schema)
+        : {
+            errors: _errors || [],
+            errorSchema: _errorSchema || {},
+          };
+      const idSchema = toIdSchema(
+        retrievedSchema,
+        uiSchema["ui:rootFieldId"],
+        definitions,
+        formData,
+        idPrefix
+      );
+      return {
+        schema,
+        uiSchema,
+        idSchema,
+        formData,
+        edit,
+        errors,
+        errorSchema,
+      };
+    }
+  );
 
   shouldComponentUpdate(nextProps, nextState) {
     return shouldRender(this, nextProps, nextState);
@@ -110,6 +139,7 @@ export default class Form extends Component {
         errors: toErrorList(newErrorSchema),
       };
     }
+
     setState(this, state, () => {
       if (this.props.onChange) {
         this.props.onChange(this.state);

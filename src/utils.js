@@ -701,3 +701,29 @@ export function rangeSpec(schema) {
   }
   return spec;
 }
+
+export const createSelector = (...selectors) => {
+  const fn = selectors.pop();
+  let prevCache = [];
+  let cache = [];
+
+  return (props, state) => {
+    let changed = false;
+
+    selectors.forEach((selector, index) => {
+      cache[index] = selector(props, state);
+      if (!changed && cache[index] !== prevCache[index]) {
+        changed = true;
+      }
+    });
+
+    if (changed) {
+      prevCache = [...cache];
+      cache = [];
+      return fn(...prevCache);
+    }
+
+    cache = [];
+    return null;
+  };
+};
