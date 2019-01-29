@@ -4,5 +4,5 @@ import widgets from "./components/widgets";
 import templates from "./components/templates";
 import withTheme from "./components/withTheme";
 
-export { Form, fields, widgets, templates };
+export { Form, fields, widgets, templates, withTheme };
 export default withTheme("Bootstrap", { widgets, templates });
