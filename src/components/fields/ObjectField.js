@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import { orderProperties, retrieveSchema } from "../../utils";
+import {
+  orderProperties,
+  retrieveSchema,
+  getWidget,
+  getUiOptions,
+} from "../../utils";
 
 class ObjectField extends Component {
   static defaultProps = {
@@ -49,12 +54,47 @@ class ObjectField extends Component {
       onBlur,
       onFocus,
       registry,
+      autofocus,
+      onChange,
+      errors,
     } = this.props;
-    const { definitions, fields, templates, formContext } = registry;
-    const { SchemaField } = fields;
-    const { ObjectFieldTemplate } = templates;
+    const { definitions, fields, templates, formContext, widgets } = registry;
     const schema = retrieveSchema(this.props.schema, definitions, formData);
     const title = schema.title === undefined ? name : schema.title;
+    const defaultWidget = schema.format || null;
+    const { widget = defaultWidget, ...options } = getUiOptions(uiSchema);
+    try {
+      const Widget = widget ? getWidget(schema, widget, widgets) : null;
+      if (Widget) {
+        return (
+          <Widget
+            name={name}
+            formData={formData}
+            options={options}
+            schema={schema}
+            uiSchema={uiSchema}
+            id={idSchema && idSchema.$id}
+            label={title === undefined ? name : title}
+            onChange={onChange}
+            onBlur={onBlur}
+            onFocus={onFocus}
+            required={required}
+            disabled={disabled}
+            readonly={readonly}
+            formContext={formContext}
+            autofocus={autofocus}
+            registry={registry}
+            errors={errors}
+          />
+        );
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+
+    const { SchemaField } = fields;
+    const { ObjectFieldTemplate } = templates;
+
     const description = uiSchema["ui:description"] || schema.description;
     let orderedProperties;
 
