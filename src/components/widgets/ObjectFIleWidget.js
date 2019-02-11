@@ -8,7 +8,7 @@ export class ObjectFileWidget extends Component {
     const state = { formData };
     if (!formData.file && formData.content) {
       const { blob, name = formData.name } = dataURItoBlob(formData.content);
-      state.file = new File(blob, name);
+      state.file = new File([blob], name, { type: formData.mimeType });
     }
 
     if (state.file) {
