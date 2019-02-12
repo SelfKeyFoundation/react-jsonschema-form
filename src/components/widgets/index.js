@@ -17,7 +17,7 @@ import TextareaWidget from "./TextareaWidget";
 import TextWidget from "./TextWidget";
 import URLWidget from "./URLWidget";
 import UpDownWidget from "./UpDownWidget";
-import ObjectFileWidget from "./ObjectFileWidget2";
+import ObjectFileWidget from "./ObjectFileWidget";
 
 const widgetMap = {
   boolean: {
